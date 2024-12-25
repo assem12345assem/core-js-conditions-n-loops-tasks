@@ -232,13 +232,16 @@ function getIndexOf(str, letter) {
  *  12345, 6    => false
  */
 function isContainNumber(num, digit) {
-  const str = `${num}`;
-  const strDigit = `${digit}`;
-  for (let i = 0; i < str.length; i += 1) {
-    if (str[i] === strDigit) {
+  let currentNum = num;
+
+  while (currentNum > 0) {
+    if (currentNum % 10 === digit) {
       return true;
     }
+
+    currentNum = Math.trunc(currentNum / 10);
   }
+
   return false;
 }
 
@@ -256,18 +259,23 @@ function isContainNumber(num, digit) {
  *  [1, 2, 3, 4, 5] => -1   => no balance element
  */
 function getBalanceIndex(arr) {
-  let sum = 0;
+  const prefixSums = new Array(arr.length);
+  let prefixSumTotal = 0;
+
   for (let i = 0; i < arr.length; i += 1) {
-    sum += arr[i];
+    prefixSumTotal += arr[i];
+    prefixSums[i] = prefixSumTotal;
   }
-  let leftSum = 0;
-  for (let i = 0; i < arr.length; i += 1) {
-    const rightSum = sum - leftSum - arr[i];
-    if (rightSum === leftSum) {
+
+  let postfixSumTotal = 0;
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    postfixSumTotal += arr[i];
+
+    if (postfixSumTotal === prefixSums[i]) {
       return i;
     }
-    leftSum += arr[i];
   }
+
   return -1;
 }
 
@@ -293,46 +301,45 @@ function getBalanceIndex(arr) {
  *        ]
  */
 function getSpiralMatrix(size) {
-  const spiralMatrix = [];
-  for (let i = 0; i < size; i += 1) {
-    spiralMatrix[i] = [];
-    for (let j = 0; j < size; j += 1) {
-      spiralMatrix[i][j] = 0;
-    }
-  }
-  let n = 1;
-  let top = 0;
-  let left = 0;
-  let right = size - 1;
-  let bottom = size - 1;
-  while (top <= bottom && left <= right) {
-    for (let i = left; i <= right; i += 1) {
-      spiralMatrix[top][i] = n;
-      n += 1;
-    }
-    top += 1;
-    for (let i = top; i <= bottom; i += 1) {
-      spiralMatrix[i][right] = n;
-      n += 1;
-    }
-    right -= 1;
+  const matrix = new Array(size);
 
-    if (top <= bottom) {
-      for (let i = right; i >= left; i -= 1) {
-        spiralMatrix[bottom][i] = n;
-        n += 1;
-      }
-      bottom -= 1;
+  for (let i = 0; i < size; i += 1) {
+    const arr = new Array(size);
+
+    for (let j = 0; j < size; j += 1) {
+      arr[j] = 0;
     }
-    if (left <= right) {
-      for (let i = bottom; i >= top; i -= 1) {
-        spiralMatrix[i][left] = n;
-        n += 1;
-      }
-      left += 1;
-    }
+
+    matrix[i] = arr;
   }
-  return spiralMatrix;
+
+  let row = 0;
+  let col = 0;
+
+  let currentNum = 1;
+  const last = size * size;
+
+  while (currentNum < last + 1) {
+    matrix[row][col] = currentNum;
+
+    if (
+      !(row - 1 >= 0 && matrix[row - 1][col] === 0) &&
+      col + 1 < size &&
+      matrix[row][col + 1] === 0
+    ) {
+      col += 1;
+    } else if (row + 1 < size && matrix[row + 1][col] === 0) {
+      row += 1;
+    } else if (col - 1 >= 0 && matrix[row][col - 1] === 0) {
+      col -= 1;
+    } else if (row - 1 >= 0 && matrix[row - 1][col] === 0) {
+      row -= 1;
+    }
+
+    currentNum += 1;
+  }
+
+  return matrix;
 }
 
 /**
@@ -460,50 +467,55 @@ function shuffleChar(str, iterations) {
  * @returns {number} The nearest larger number, or original number if none exists.
  */
 function getNearestBigger(number) {
-  const digits = [];
-  let temp = number;
+  let nums = [];
+  let numCopy = number;
 
-  while (temp > 0) {
-    digits.unshift(temp % 10);
-    temp = Math.floor(temp / 10);
+  while (numCopy > 0) {
+    nums.push(numCopy % 10);
+    numCopy = Math.floor(numCopy / 10);
   }
 
-  const n = digits.length;
-  let i = n - 2;
+  nums = nums.reverse();
 
-  while (i >= 0 && digits[i] >= digits[i + 1]) {
-    i -= 1;
+  for (let i = nums.length - 1; i > 0; i -= 1) {
+    if (nums[i - 1] < nums[i]) {
+      [nums[i - 1], nums[i]] = [nums[i], nums[i - 1]];
+
+      let left = i - 1;
+      let right = nums.length - 1;
+
+      while (left < right) {
+        if (nums[left] > nums[right] && nums[right] > nums[left + 1]) {
+          [nums[left], nums[right]] = [nums[right], nums[left]];
+
+          left = 0;
+          right = 0;
+        }
+
+        right -= 1;
+      }
+
+      for (let k = i; k < nums.length - 1; k += 1) {
+        for (let j = k + 1; j < nums.length; j += 1) {
+          if (nums[k] > nums[j]) {
+            [nums[j], nums[k]] = [nums[k], nums[j]];
+          }
+        }
+      }
+
+      let result = nums[nums.length - 1];
+      let multiplier = 10;
+
+      for (let r = nums.length - 2; r >= 0; r -= 1) {
+        result += nums[r] * multiplier;
+        multiplier *= 10;
+      }
+
+      return result;
+    }
   }
 
-  if (i < 0) {
-    return number;
-  }
-
-  let j = n - 1;
-  while (digits[j] <= digits[i]) {
-    j -= 1;
-  }
-
-  let tempDigit = digits[i];
-  digits[i] = digits[j];
-  digits[j] = tempDigit;
-
-  let left = i + 1;
-  let right = n - 1;
-  while (left < right) {
-    tempDigit = digits[left];
-    digits[left] = digits[right];
-    digits[right] = tempDigit;
-    left += 1;
-    right -= 1;
-  }
-
-  let result = 0;
-  for (i = 0; i < digits.length; i += 1) {
-    result = result * 10 + digits[i];
-  }
-
-  return result;
+  return number;
 }
 
 module.exports = {
