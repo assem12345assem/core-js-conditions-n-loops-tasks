@@ -64,8 +64,7 @@ function getMaxNumber(a, b, c) {
  */
 function canQueenCaptureKing(queen, king) {
   if (queen.x === king.x || queen.y === king.y) return true;
-  if (Math.abs(queen.x - king.x) === Math.abs(queen.y - king.y)) return true;
-  return false;
+  return Math.abs(queen.x - king.x) === Math.abs(queen.y - king.y);
 }
 
 /**
@@ -356,7 +355,7 @@ function rotateMatrix(matrix) {
   for (let i = 0; i < matrix.length; i += 1) {
     ans[i] = new Array(matrix.length);
   }
-  for (let x = 0, y = matrix.length-1; x < matrix.length; x += 1, y -= 1) {
+  for (let x = 0, y = matrix.length - 1; x < matrix.length; x += 1, y -= 1) {
     for (let k = 0; k < matrix.length; k += 1) {
       ans[k][y] = matrix[x][k];
     }
@@ -386,20 +385,19 @@ function rotateMatrix(matrix) {
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
 function sortByAsc(arr) {
-  let temp;
-  let j;
-  const n = arr.length;
+  const arrCopy = arr;
 
-  for (let i = 1; i < n; i += 1) {
-    temp = arr[i];
-    j = i - 1;
+  for (let i = Math.trunc(arr.length / 2); i > 0; i = Math.trunc(i / 2)) {
+    for (let j = i; j < arr.length; j += 1) {
+      const tempVal = arrCopy[j];
+      let k;
 
-    while (j >= 0 && arr[j] > temp) {
-      arr[j + 1] = arr[j];
-      j -= 1;
+      for (k = j; k >= i && arr[k - i] > tempVal; k -= i) {
+        arrCopy[k] = arrCopy[k - i];
+      }
+
+      arrCopy[k] = tempVal;
     }
-
-    arr[j + 1] = temp;
   }
 }
 
@@ -421,26 +419,27 @@ function sortByAsc(arr) {
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
 function shuffleChar(str, iterations) {
-  if (str.length <= 1) return str;
-  const n = str.length;
-
-  if (n <= 1) return str;
-  if (iterations >= n) iterations /= 10;
-  for (let i = 0; i < iterations; i += 1) {
+  let ans = str;
+  let iter = iterations;
+  if (ans.length <= 1) return ans;
+  const n = ans.length;
+  if (n <= 1) return ans;
+  if (iter >= n) iter /= 10;
+  for (let i = 0; i < iter; i += 1) {
     let evenChars = '';
     let oddChars = '';
 
-    for (let j = 0; j < n; j++) {
+    for (let j = 0; j < n; j += 1) {
       if (j % 2 === 0) {
-        evenChars += str[j];
+        evenChars += ans[j];
       } else {
-        oddChars += str[j];
+        oddChars += ans[j];
       }
     }
 
-    str = evenChars + oddChars;
+    ans = evenChars + oddChars;
   }
-  return str;
+  return ans;
 }
 
 /**
