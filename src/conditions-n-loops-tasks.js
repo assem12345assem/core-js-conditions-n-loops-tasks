@@ -351,26 +351,24 @@ function getSpiralMatrix(size) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-/* eslint-disable no-param-reassign */
 function rotateMatrix(matrix) {
-  let top = 0;
-  let bottom = matrix.length - 1;
-  let left = 0;
-  let right = matrix[0].length - 1;
-  while (top < bottom && left < right) {
-    for (let i = 0; i < bottom - top; i += 1) {
-      const temp = matrix[top][left + i];
-      matrix[top][left + i] = matrix[bottom - i][left];
-      matrix[bottom - i][left] = matrix[bottom][right - i];
-      matrix[bottom][right - i] = matrix[top + i][right];
-      matrix[top + i][right] = temp;
-    }
-
-    top += 1;
-    bottom -= 1;
-    left += 1;
-    right -= 1;
+  const ans = new Array(matrix.length);
+  for (let i = 0; i < matrix.length; i += 1) {
+    ans[i] = new Array(matrix.length);
   }
+  for (let x = 0, y = matrix.length-1; x < matrix.length; x += 1, y -= 1) {
+    for (let k = 0; k < matrix.length; k += 1) {
+      ans[k][y] = matrix[x][k];
+    }
+  }
+
+  const m = matrix;
+  for (let i = 0; i < matrix.length; i += 1) {
+    for (let j = 0; j < matrix.length; j += 1) {
+      m[i][j] = ans[i][j];
+    }
+  }
+  return matrix;
 }
 
 /**
@@ -388,8 +386,9 @@ function rotateMatrix(matrix) {
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
 function sortByAsc(arr) {
-  let temp, j;
-  let n = arr.length;
+  let temp;
+  let j;
+  const n = arr.length;
 
   for (let i = 1; i < n; i += 1) {
     temp = arr[i];
