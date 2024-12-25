@@ -351,12 +351,12 @@ function getSpiralMatrix(size) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
+/* eslint-disable no-param-reassign */
 function rotateMatrix(matrix) {
   let top = 0;
   let bottom = matrix.length - 1;
   let left = 0;
   let right = matrix[0].length - 1;
-
   while (top < bottom && left < right) {
     for (let i = 0; i < bottom - top; i += 1) {
       const temp = matrix[top][left + i];
@@ -372,6 +372,7 @@ function rotateMatrix(matrix) {
     right -= 1;
   }
 }
+
 /**
  * Sorts an array of numbers in ascending order in place.
  * Employ any sorting algorithm of your choice.
@@ -461,7 +462,7 @@ function shuffleChar(str, iterations) {
  * @returns {number} The nearest larger number, or original number if none exists.
  */
 function getNearestBigger(number) {
-  let digits = [];
+  const digits = [];
   let temp = number;
 
   while (temp > 0) {
@@ -469,7 +470,7 @@ function getNearestBigger(number) {
     temp = Math.floor(temp / 10);
   }
 
-  let n = digits.length;
+  const n = digits.length;
   let i = n - 2;
 
   while (i >= 0 && digits[i] >= digits[i + 1]) {
